@@ -14,6 +14,7 @@ func main() {
 	//routes management
 	routes := gin.Default()
 	routes.POST("/register", controllers.Register)
+	routes.POST("/login", controllers.Login)
 
 	routes.Run(":80")
 }
