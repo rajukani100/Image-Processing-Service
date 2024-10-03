@@ -26,3 +26,13 @@ func CheckUserExist(username string) (bool, error) {
 	}
 	return true, nil // User exists
 }
+
+func GetUser(username string) (*models.User, error) {
+	var user *models.User
+	collection := client.Database("ImageProcessingService").Collection("users")
+	err := collection.FindOne(context.Background(), bson.M{"username": username}).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil // User exists
+}
