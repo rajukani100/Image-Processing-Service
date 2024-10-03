@@ -74,3 +74,61 @@ func Register(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 
 }
+
+func Login(c *gin.Context) {
+	var user models.User
+	if bindErr := c.BindJSON(&user); bindErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "error while binding"})
+		return
+	}
+
+	//custom validation
+	validate := validator.New()
+	validateErr := validate.Struct(user)
+	if validateErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "field must not be empty."})
+		return
+	}
+
+	//check user exits
+	isUserExist, userExistErr := database.CheckUserExist(user.Username)
+	if userExistErr != nil {
+		log.Panic("Error While Finding User.")
+		return
+	}
+
+	if !isUserExist {
+		c.JSON(http.StatusConflict, gin.H{"error": "User does not exist"})
+		return
+	}
+
+	//fetching User model
+	var foundUser *models.User
+	foundUser, fetchErr := database.GetUser(user.Username)
+	if fetchErr != nil {
+		log.Panic("Error While fetching user data.")
+		return
+	}
+
+	//validate password
+	isValidUser := services.CheckPasswordHash(user.Password, foundUser.Password)
+	if !isValidUser {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Password is wrong."})
+		return
+	}
+
+	//generating JWT
+	jwtToken, tokenErr := services.GenerateJwt(&user.Username)
+	if tokenErr != nil {
+		log.Panic("Error While JWT token Generation.")
+		return
+	}
+
+	//success response
+	response := struct {
+		User  models.User `json:"user"`
+		Token string      `json:"token"`
+	}{User: *foundUser, Token: jwtToken}
+
+	c.JSON(http.StatusOK, response)
+}
