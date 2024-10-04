@@ -28,6 +28,7 @@ func main() {
 	authorized.Use(middleware.JwtAuth)
 	{
 		authorized.POST("", controllers.UploadImage) // /image routes
+		authorized.GET("/:id", controllers.ImageByID)
 	}
 
 	routes.Run(":80")
