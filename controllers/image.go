@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"Image-Processing-Service/database"
+	"Image-Processing-Service/models"
 	"fmt"
 	"log"
 	"net/http"
@@ -8,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func UploadImage(c *gin.Context) {
@@ -30,15 +33,26 @@ func UploadImage(c *gin.Context) {
 
 	imageUrl := "http://127.0.0.1/uploads/" + uniqueFilename
 
+	//image model
+	var image = models.Image{
+		ID:          primitive.NewObjectID(),
+		Filename:    uniqueFilename,
+		ContentType: file.Header.Get("Content-Type"),
+		Size:        int16(file.Size),
+		Url:         imageUrl,
+	}
+
+	//save image info to DB
+	imgErr := database.SaveImageInfo(&image)
+	if imgErr != nil {
+		log.Print("Error While saving image info")
+		return
+	}
+
 	//success
 	c.JSON(http.StatusOK, gin.H{
 		"message": "File uploaded successfully",
-		"data": gin.H{
-			"filename":    uniqueFilename,
-			"url":         imageUrl,
-			"size":        file.Size,
-			"contentType": file.Header.Get("Content-Type"),
-		},
+		"data":    image,
 	})
 
 }
