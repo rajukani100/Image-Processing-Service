@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func UploadImage(c *gin.Context) {
@@ -53,6 +54,30 @@ func UploadImage(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "File uploaded successfully",
 		"data":    image,
+	})
+
+}
+
+func ImageByID(c *gin.Context) {
+	id := c.Param("id")
+
+	var image *models.Image
+	var err error
+	image, err = database.GetImageInfoByID(id)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.JSON(http.StatusNotFound, gin.H{
+				"message": "Image not found"})
+			return
+		}
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid id"})
+		return
+	}
+
+	//success
+	c.JSON(http.StatusOK, gin.H{
+		"data": image,
 	})
 
 }
