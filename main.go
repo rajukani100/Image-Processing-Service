@@ -29,6 +29,7 @@ func main() {
 	{
 		authorized.POST("", controllers.UploadImage) // /image routes
 		authorized.GET("/:id", controllers.ImageByID)
+		authorized.POST("/:id/transform", controllers.TransformImage)
 	}
 
 	routes.Run(":80")
