@@ -5,6 +5,14 @@ go 1.23.1
 require go.mongodb.org/mongo-driver v1.17.1
 
 require (
+	github.com/anthonynsimon/bild v0.14.0 // indirect
+	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/spf13/cobra v0.0.5 // indirect
+	github.com/spf13/pflag v1.0.3 // indirect
+	golang.org/x/image v0.18.0 // indirect
+)
+
+require (
 	github.com/bytedance/sonic v1.12.3 // indirect
 	github.com/bytedance/sonic/loader v0.2.0 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
