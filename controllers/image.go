@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/anthonynsimon/bild/effect"
@@ -92,6 +93,29 @@ func ImageByID(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"data": image,
 	})
+}
+
+func ListImagesInfo(c *gin.Context) {
+	docPage, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	docLimit, _ := strconv.Atoi(c.DefaultQuery("limit", "5"))
+
+	var imageList *[]models.Image
+	var err error
+
+	if docPage < 1 || docLimit < 1 {
+		imageList, err = database.GetImageList(1, 5)
+	} else {
+		imageList, err = database.GetImageList(docPage, docLimit)
+	}
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			c.JSON(http.StatusNotFound, gin.H{"message": "no images found."})
+			return
+		}
+		c.JSON(http.StatusBadRequest, gin.H{"error": "error while loading image info"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"Data": *imageList})
 }
 
 func TransformImage(c *gin.Context) {
