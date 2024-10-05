@@ -126,30 +126,53 @@ func TransformImage(c *gin.Context) {
 		return
 	}
 
-	if transformRequest.Transformations.Resize != nil {
+	t := &transformRequest.Transformations
+	if t.Resize != nil {
 		//resize
-		imgFile = transform.Resize(imgFile, transformRequest.Transformations.Resize.Width, transformRequest.Transformations.Resize.Height, transform.Linear)
+		imgFile = transform.Resize(imgFile, t.Resize.Width, t.Resize.Height, transform.Linear)
 	}
 
-	if transformRequest.Transformations.Crop != nil {
+	if t.Crop != nil {
 		//crop
-		c := transformRequest.Transformations.Crop
+		c := t.Crop
 		imgFile = transform.Crop(imgFile, image.Rect(c.X0, c.Y0, c.X1, c.Y1))
 	}
 
-	if transformRequest.Transformations.Rotate != nil {
-		//rotate
-		imgFile = transform.Rotate(imgFile, *transformRequest.Transformations.Rotate, nil)
+	//Flip
+	if t.FlipH != nil && *t.FlipH {
+		imgFile = transform.FlipH(imgFile)
+	}
+	if t.FlipV != nil && *t.FlipH {
+		imgFile = transform.FlipV(imgFile)
 	}
 
-	if transformRequest.Transformations.Filters != nil {
+	if t.Rotate != nil && *t.Rotate != 0 {
+		//rotate
+		imgFile = transform.Rotate(imgFile, *t.Rotate, nil)
+	}
+
+	if t.Filters != nil {
 		//filters
-		if transformRequest.Transformations.Filters.Grayscale {
+		f := t.Filters
+		if f.Grayscale {
 			imgFile = effect.Grayscale(imgFile)
 		}
-		if transformRequest.Transformations.Filters.Sepia {
+		if f.Sepia {
 			imgFile = effect.Sepia(imgFile)
 		}
+		if f.Invert {
+			imgFile = effect.Invert(imgFile)
+		}
+		if f.Sobel {
+			imgFile = effect.Sobel(imgFile)
+		}
+		if f.Sharpen {
+			imgFile = effect.Sharpen(imgFile)
+		}
+		if f.Emboss {
+			imgFile = effect.Emboss(imgFile)
+		}
+
 	}
 
 	transformedImgPath := "assets/edited/" + img.Filename
