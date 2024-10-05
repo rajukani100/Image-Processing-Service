@@ -28,6 +28,7 @@ func main() {
 	authorized.Use(middleware.JwtAuth)
 	{
 		authorized.POST("", controllers.UploadImage) // /image routes
+		authorized.GET("", controllers.ListImagesInfo)
 		authorized.GET("/:id", controllers.ImageByID)
 		authorized.POST("/:id/transform", controllers.TransformImage)
 	}
