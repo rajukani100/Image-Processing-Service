@@ -107,6 +107,12 @@ func ListImagesInfo(c *gin.Context) {
 	} else {
 		imageList, err = database.GetImageList(docPage, docLimit)
 	}
+
+	if *imageList == nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "no images found."})
+		return
+	}
+
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			c.JSON(http.StatusNotFound, gin.H{"message": "no images found."})
