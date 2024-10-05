@@ -15,6 +15,8 @@ type Transformations struct {
 	Resize  *Resize  `json:"resize,omitempty"`
 	Crop    *Crop    `json:"crop,omitempty"`
 	Rotate  *float64 `json:"rotate,omitempty"`
+	FlipH   *bool    `json:"flip_h,omitempty"`
+	FlipV   *bool    `json:"flip_v,omitempty"`
 	Filters *Filters `json:"filters,omitempty"`
 }
 
@@ -36,6 +38,10 @@ type Crop struct {
 type Filters struct {
 	Grayscale bool `json:"grayscale,omitempty"`
 	Sepia     bool `json:"sepia,omitempty"`
+	Invert    bool `json:"invert,omitempty"`
+	Sobel     bool `json:"sobel,omitempty"`
+	Sharpen   bool `json:"sharpen,omitempty"`
+	Emboss    bool `json:"emboss,omitempty"`
 }
 
 // TransformRequest struct to encapsulate the request payload
